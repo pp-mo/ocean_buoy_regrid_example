@@ -244,9 +244,6 @@ def regrid_obvious(data, lats, lons, lat_levels, lon_levels):
         y0, y1 = lat_levels[iy:iy+2]
         for ix in range(n_lon_cells):
             x0, x1 = lon_levels[ix:ix+2]
-#            indexes = np.where(np.logical_and(
-#                np.logical_and(lats >= y0, lats < y1),
-#                np.logical_and(lons >= x0, lons < x1)))
             indexes = np.logical_and(
                 np.logical_and(lats >= y0, lats < y1),
                 np.logical_and(lons >= x0, lons < x1))

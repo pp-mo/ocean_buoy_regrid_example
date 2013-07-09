@@ -8,7 +8,7 @@ import numpy as np
 import iris.analysis
 
 def stats_over_coord_grid(source_cube, grid_cube,
-                          aggregator=iris.analysis.MEAN):
+                          aggregator_list=[iris.analysis.MEAN]):
     """
     Grid data by coordinate value, without reference to a coordinate system.
 
@@ -21,9 +21,9 @@ def stats_over_coord_grid(source_cube, grid_cube,
         Only the contiguous bounds of the cube's DimCoords are actually used.
         Each of these must have the same name as a coordinate of source_cube.
 
-    * aggregator (:class:`iris.analysis.Aggregator`):
-        Method defining the statistic, which produces a single value over the
-        set of source points falling in each output cell.
+    * aggregator_list (sequence of :class:`iris.analysis.Aggregator`):
+        Methods defining the output statistics, each of which produce a single
+        value over the set of source points falling in each output cell.
 
     Return value:
         A new cube, which is a copy of the original data cube aggregated onto
