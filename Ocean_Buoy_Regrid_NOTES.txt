@@ -1,0 +1,121 @@
+From Iris 'Ocean Buoy data' usecase...
+
+Suggested test file:
+    itpp@eld238: /home/h05/itpp > ls -sh /data/local/dataZoo/NetCDF/oceanObs/EN3_v2a_Profiles_195001.nc
+    15M /data/local/dataZoo/NetCDF/oceanObs/EN3_v2a_Profiles_195001.nc
+    itpp@eld238: /home/h05/itpp > 
+
+
+cf. http://fcm9/projects/IRIS/wiki/UseCaseOceanBuoyData
+more recent is probably : http://fcm9/projects/IRIS/browser/specifications/useCases/targeted/phaseTwo/oceanBuoy/buoyAgg.pdf
+
+Key steps:
+    6. define an x, y, z, t grid, a geographic coordinate system with 2 degree resolution in
+        lat and lon and a Gregorian calendar with calendar month resolution and user
+        defined depth layers;
+    7. aggregate the anomaly data to deliver:
+        (a) calculating mean, minimum, maximum and standard deviation values;
+        (b) depths(m): [0-10, 10-50, 50-150, 150-300];
+        (c) use the quality flag qualifiers, such that only data values with a flag of 1 on
+            the data, depth position and time are used;
+        (d) threshold the standard deviation so that it is only calculated if at least 3
+            values exist;
+        (e) the definition of the process, e.g.mean, includes the number of values used;
+
+*** INITIALLY *** skip the quality bit...
+
+Content of datafile..
+  --see /net/home/h05/itpp/Iris/odds/ocean_buoy_regrids/OceanBuoyData_ndump.txt
+
+Important bits...
+itpp@eld238: /home/h05/itpp > ncdump -h /data/local/dataZoo/NetCDF/oceanObs/EN3_v2a_Profiles_195001.nc
+netcdf EN3_v2a_Profiles_195001 {
+dimensions:
+    DATE_TIME = 14 ;
+    STRING16 = 16 ;
+    STRING8 = 8 ;
+    STRING4 = 4 ;
+    STRING2 = 2 ;
+    N_PROF = 2581 ;
+    N_PARAM = 5 ;
+    N_LEVELS = 55 ;
+    N_TECH_PARAM = 1 ;
+    N_CALIB = 1 ;
+    N_HISTORY = UNLIMITED ; // (0 currently)
+variables:
+    char REFERENCE_DATE_TIME(DATE_TIME) ;
+        REFERENCE_DATE_TIME:long_name = "date of reference for julian days" ;
+        REFERENCE_DATE_TIME:conventions = "yyyymmddhh24miss" ;
+    char STATION_PARAMETERS(N_PROF, N_PARAM, STRING4) ;
+        STATION_PARAMETERS:long_name = "list of available PARAMETERs for the station" ;
+        STATION_PARAMETERS:conventions = "gf3 code list in (deph, potm, psal, cndc)" ;
+    char DC_REFERENCE(N_PROF, STRING16) ;
+        DC_REFERENCE:long_name = "station unique identifier in data centre" ;
+        DC_REFERENCE:conventions = "data centre convention" ;
+    double JULD(N_PROF) ;
+        JULD:long_name = "julian day (utc) of the station relative to reference_date_time" ;
+        JULD:units = "days since 1950-01-01 00:00:00 utc" ;
+        JULD:conventions = "relative julian days with decimal part (as parts of day)" ;
+        JULD:_fillvalue = 99999. ;
+    double JULD_LOCATION(N_PROF) ;
+        JULD_LOCATION:long_name = "julian day (utc) of the location relative to reference_date_time" ;
+        JULD_LOCATION:units = "days since 1950-01-01 00:00:00 utc" ;
+        JULD_LOCATION:conventions = "relative julian days with decimal part (as parts of day)" ;
+        JULD_LOCATION:_fillvalue = 99999. ;
+    double LATITUDE(N_PROF) ;
+        LATITUDE:long_name = "latitude of the station, best estimated value" ;
+        LATITUDE:units = "degree_north" ;
+        LATITUDE:_fillvalue = 99999. ;
+        LATITUDE:valid_min = -90. ;
+        LATITUDE:valid_max = 90. ;
+    double LONGITUDE(N_PROF) ;
+        LONGITUDE:long_name = "longitude of the station, best estimated value" ;
+        LONGITUDE:units = "degree_east" ;
+        LONGITUDE:_fillvalue = 99999. ;
+        LONGITUDE:valid_min = -180. ;
+        LONGITUDE:valid_max = 180. ;
+    float DEPH_CORRECTED(N_PROF, N_LEVELS) ;
+        DEPH_CORRECTED:long_name = "corrected depth" ;
+        DEPH_CORRECTED:_fillvalue = 99999. ;
+        DEPH_CORRECTED:units = "metre" ;
+        DEPH_CORRECTED:valid_min = 0. ;
+        DEPH_CORRECTED:valid_max = 15000. ;
+        DEPH_CORRECTED:c_format = "%7.1f" ;
+        DEPH_CORRECTED:fortran_format = "f7.1" ;
+        DEPH_CORRECTED:resolution = 0.1 ;
+    float PSAL_CORRECTED(N_PROF, N_LEVELS) ;
+        PSAL_CORRECTED:long_name = "corrected practical salinity" ;
+        PSAL_CORRECTED:_fillvalue = 99999. ;
+        PSAL_CORRECTED:units = "psu" ;
+        PSAL_CORRECTED:valid_min = 0. ;
+        PSAL_CORRECTED:valid_max = 60. ;
+        PSAL_CORRECTED:comment = "corrected value" ;
+        PSAL_CORRECTED:c_format = "%9.3f" ;
+        PSAL_CORRECTED:fortran_format = "f9.3" ;
+        PSAL_CORRECTED:resolution = 0.001 ;
+    float TEMP(N_PROF, N_LEVELS) ;
+        TEMP:long_name = "Temperature in situ t90 scale" ;
+        TEMP:_fillvalue = 99999. ;
+        TEMP:units = "degree_celsius" ;
+        TEMP:valid_min = -3. ;
+        TEMP:valid_max = 40. ;
+        TEMP:comment = "in situ measurement" ;
+        TEMP:c_format = "%9.3f" ;
+        TEMP:fortran_format = "f9.3" ;
+        TEMP:resolution = 0.001 ;
+    float POTM_CORRECTED(N_PROF, N_LEVELS) ;
+        POTM_CORRECTED:long_name = "corrected pot. temp" ;
+        POTM_CORRECTED:_fillvalue = 99999. ;
+        POTM_CORRECTED:units = "degree_celsius" ;
+        POTM_CORRECTED:valid_min = -3. ;
+        POTM_CORRECTED:valid_max = 40. ;
+        POTM_CORRECTED:comment = "corrected value" ;
+        POTM_CORRECTED:c_format = "%9.3f" ;
+        POTM_CORRECTED:fortran_format = "f9.3" ;
+        POTM_CORRECTED:resolution = 0.001 ;
+    char PARAMETER(N_PROF, N_CALIB, N_PARAM, STRING4) ;
+        PARAMETER:long_name = "list of PARAMETERs with calibration information" ;
+        PARAMETER:conventions = "gf3 code list in (deph, potm, psal, bkpt, bkps, anpt)" ;
+
+
+Preliminary load is junk, so will have to create a cube from scratch.
