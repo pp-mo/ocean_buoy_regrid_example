@@ -119,3 +119,8 @@ variables:
 
 
 Preliminary load is junk, so will have to create a cube from scratch.
+
+==== 20130709 ====
+Completed random data generation + speed testing code
+  -- surprising result: pointwise is actually quicker
+Created github repo for sharing
